@@ -3,5 +3,6 @@
     public interface IRenderable
     {
         void Render();
+        void SetRenderer(IRenderer renderer);
     }
 }

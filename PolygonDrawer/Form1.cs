@@ -1,6 +1,7 @@
 using PolygonDrawer.Core;
 using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Edges.EdgeTypes;
+using PolygonDrawer.Core.Rendering;
 using PolygonDrawer.Renderers;
 
 namespace PolygonDrawer
@@ -23,7 +24,11 @@ namespace PolygonDrawer
         {
             InitializeComponent();
             InitializeCanvas();
+            SetButtonEvents();
+        }
 
+        private void SetButtonEvents()
+        {
             resetButton.Click += (s, e) =>
             {
                 _polygon.Clear();
@@ -65,12 +70,12 @@ namespace PolygonDrawer
 
             obliqueRadioButton.CheckedChanged += (s, e) =>
             {
-               ChangeEdge<Deg45Edge>(obliqueRadioButton);
+                ChangeEdge<Deg45Edge>(obliqueRadioButton);
             };
 
             normalRadioButton.CheckedChanged += (s, e) =>
             {
-               ChangeEdge<Edge>(normalRadioButton);
+                ChangeEdge<Edge>(normalRadioButton);
             };
 
             fixedRadioButton.CheckedChanged += (s, e) =>
@@ -78,7 +83,7 @@ namespace PolygonDrawer
                 ChangeEdge<FixedLengthEdge>(fixedRadioButton);
             };
 
-            edgeLengthTextBox.TextChanged += (s, e) =>
+            setLengthButton.Click += (s, e) =>
             {
                 if (_selectedEdge is not FixedLengthEdge fle)
                 {
@@ -98,8 +103,64 @@ namespace PolygonDrawer
 
             circularRadioButton.CheckedChanged += (s, e) =>
             {
-               ChangeEdge<CircleEdge>(circularRadioButton);
+                ChangeEdge<CircleEdge>(circularRadioButton);
             };
+
+            g0RadioButton.CheckedChanged += (s, e) =>
+            {
+                SetContinuuity(g0RadioButton, ContinuuityType.G0);
+            };
+
+            g1RadioButton.CheckedChanged += (s, e) =>
+            {
+                SetContinuuity(g1RadioButton, ContinuuityType.G1);
+            };
+
+            c1RadioButton.CheckedChanged += (s, e) =>
+            {
+                SetContinuuity(c1RadioButton, ContinuuityType.C1);
+            };
+
+            gdiRenderrRadioButton.CheckedChanged += (s, e) =>
+            {
+                SetRenderer(gdiRenderrRadioButton, _gdiRenderer);
+            };
+
+            customRenderingRadioButton.CheckedChanged += (s, e) =>
+            {
+                SetRenderer(customRenderingRadioButton, _customRenderer);
+            };
+        }
+
+        private void SetContinuuity(RadioButton radioButton, ContinuuityType continuityType)
+        {
+            if (_selectedVert is null
+                || _selectedVert.Type == continuityType
+                || !radioButton.Checked)
+            {
+                return;
+            }
+
+            _polygon.SetVertexContinuity(_selectedVert, continuityType);
+            mainCanvas.Invalidate();
+        }
+
+        private void SetRenderer(RadioButton radioButton, IRenderer renderer)
+        {
+            if (_selectedVert is null && _selectedEdge is null || !radioButton.Checked)
+            {
+                return;
+            }
+
+            if (_selectedEdge is not null)
+            {
+                _selectedEdge.SetRenderer(renderer);
+
+                return;
+            }
+
+            _selectedVert?.SetRenderer(renderer);
+            mainCanvas?.Invalidate();
         }
 
         private void ChangeEdge<T>(RadioButton radioButton) where T : Edge
@@ -108,17 +169,20 @@ namespace PolygonDrawer
             {
                 return;
             }
+
             if (Activator.CreateInstance(typeof(T), _selectedEdge) is not Edge newEdge)
             {
                 return;
             }
+
             _polygon.ReplaceEdge(_selectedEdge, newEdge);
+
             _selectedEdge = newEdge;
+
             SetDefaultRenderer();
+
             mainCanvas.Invalidate();
-
         }
-
 
         private void SetDefaultRenderer()
         {
@@ -174,9 +238,11 @@ namespace PolygonDrawer
 
             selectedEdgeLabel.Text = _selectedEdge is null ? "None" : _selectedEdge.ToString();
             splitEdgeButton.Enabled = _selectedEdge is not null;
-            verticalRadioButton.Enabled = _selectedEdge is not null 
+
+            verticalRadioButton.Enabled = _selectedEdge is not null
                 && !_polygon.GetEdgeNeighbors(_selectedEdge)
-                .Any(e => e is VerticalEdge);
+                    .Any(e => e is VerticalEdge);
+
             verticalRadioButton.Checked = _selectedEdge is VerticalEdge;
             obliqueRadioButton.Enabled = _selectedEdge is not null;
             obliqueRadioButton.Checked = _selectedEdge is Deg45Edge;
@@ -190,11 +256,37 @@ namespace PolygonDrawer
             circularRadioButton.Checked = _selectedEdge is CircleEdge;
 
             edgeLengthTextBox.Enabled = _selectedEdge is FixedLengthEdge;
-            edgeLengthTextBox.Text = _selectedEdge is FixedLengthEdge fle ? fle.FixedLength.ToString() : string.Empty;
+            edgeLengthTextBox.Text = _selectedEdge is FixedLengthEdge fle
+                ? fle.FixedLength.ToString()
+                : string.Empty;
+
+            gdiRenderrRadioButton.Enabled = _selectedEdge is not null || _selectedVert is not null;
+            gdiRenderrRadioButton.Checked = _selectedEdge is not null
+                ? _selectedEdge.Renderer == _gdiRenderer
+                : _selectedVert?.Renderer == _gdiRenderer;
+
+            customRenderingRadioButton.Enabled = _selectedEdge is not null || _selectedVert is not null;
+            customRenderingRadioButton.Checked = _selectedEdge is not null
+                ? _selectedEdge.Renderer == _customRenderer
+                : _selectedEdge?.Renderer == _customRenderer;
 
             _selectedVert = _polygon.GetVertexNear(e.X, e.Y);
+
             selectedVertexLabel.Text = _selectedVert is null ? "None" : _selectedVert.ToString();
             deleteVertexButton.Enabled = _selectedVert is not null;
+            g0RadioButton.Enabled = _selectedVert is not null;
+            g0RadioButton.Checked = _selectedVert?.Type == ContinuuityType.G0;
+            g1RadioButton.Enabled = _selectedVert is not null && !_polygon.GetEdgesByPoint(_selectedVert)
+                .Any(e => e is CircleEdge ce
+                    && ce.GetPoints()
+                        .Any(p => p != _selectedVert
+                            && p.Type == ContinuuityType.G1));
+
+            g1RadioButton.Checked = _selectedVert?.Type == ContinuuityType.G1;
+            c1RadioButton.Enabled = _selectedVert is not null && !_polygon.GetEdgesByPoint(_selectedVert)
+                .Any(e => e is CircleEdge);
+            c1RadioButton.Checked = _selectedVert?.Type == ContinuuityType.C1;
+
             _isPointDragged = true;
 
             mainCanvas.Invalidate();
@@ -261,6 +353,7 @@ namespace PolygonDrawer
         private void MainCanvas_Paint(object? sender, PaintEventArgs e)
         {
             var polygonCenter = _polygon.GetCenter();
+
             if (polygonCenter.x > mainCanvas.Width || polygonCenter.y > mainCanvas.Height)
             {
                 _polygon.Translate(mainCanvas.Width / 2 - polygonCenter.x, mainCanvas.Height / 2 - polygonCenter.y);

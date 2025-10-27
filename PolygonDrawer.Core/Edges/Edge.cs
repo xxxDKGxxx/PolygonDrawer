@@ -1,4 +1,5 @@
 ﻿using PolygonDrawer.Core.Rendering;
+using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 
 namespace PolygonDrawer.Core.Edges
@@ -24,6 +25,11 @@ namespace PolygonDrawer.Core.Edges
         private readonly int _edgeNum = _globalEdgeCounter++;
 
         public Edge(Edge e) : this(e.Start, e.End) { }
+
+        public void SetRenderer(IRenderer renderer)
+        {
+            Renderer = renderer;
+        }
 
         public virtual bool CanFixByX(Point p)
         {
@@ -60,17 +66,55 @@ namespace PolygonDrawer.Core.Edges
             Renderer?.DrawLine(Start.X, Start.Y, End.X, End.Y);
         }
 
-        public virtual SizeF GetTangentAtEnd(Point p)
+        public virtual Vector2 GetTangentAtEnd(Point p)
         {
             return p switch
             {
-                var u when u == Start => new SizeF(End.X - Start.X, End.Y - Start.Y),
-                var v when v == End => new SizeF(Start.X - End.X, Start.Y - End.Y),
+                var u when u == Start => new Vector2(End.X - Start.X, End.Y - Start.Y),
+                var v when v == End => new Vector2(Start.X - End.X, Start.Y - End.Y),
                 _ => throw new InvalidOperationException("Point is not part of the edge")
             };
         }
 
-        public List<Point> GetPoints()
+        public virtual bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        {
+            var otherp = Start == p ? End : Start;
+
+            if (fixedPoints.Contains(otherp))
+            {
+                return false;
+            }
+
+            var length = Length;
+            var unitTangent = Vector2.Normalize(tangent);
+            var newX = p.X - unitTangent.X * length;
+            var newY = p.Y - unitTangent.Y * length;
+
+            otherp.X = newX;
+            otherp.Y = newY;
+
+            return true;
+        }
+
+        public virtual bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        {
+            var otherp = Start == p ? End : Start;
+
+            if (fixedPoints.Contains(otherp))
+            {
+                return false;
+            }
+
+            var newX = p.X - tangent.X;
+            var newY = p.Y - tangent.Y;
+
+            otherp.X = newX;
+            otherp.Y = newY;
+
+            return true;
+        }
+
+        public virtual List<Point> GetPoints()
         {
             return [Start, End];
         }
@@ -80,9 +124,10 @@ namespace PolygonDrawer.Core.Edges
             return $"Edge {_edgeNum}: {Start} -> {End}.";
         }
 
-        protected static double Lerp(double from, double to, double t)
+        protected static float Lerp(double from, double to, double t)
         {
-            return from + (to - from) * Math.Clamp(t, 0.0, 1.0);
+            return (float)(from + (to - from) * Math.Clamp(t, 0.0, 1.0));
         }
+
     }
 }

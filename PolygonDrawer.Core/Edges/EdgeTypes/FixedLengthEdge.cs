@@ -1,12 +1,13 @@
-﻿namespace PolygonDrawer.Core.Edges.EdgeTypes
+﻿using System.Numerics;
+
+namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
     public sealed class FixedLengthEdge : Edge
     {
 
         public int FixedLength { get; set; }
 
-        private const int Tolerance = 10;
-        private const double Dampening = 0.4;
+        private const float Dampening = 0.4f;
 
         public FixedLengthEdge(Edge e) : this(e.Start, e.End)
         {
@@ -19,11 +20,7 @@
 
         public override bool ConstraintViolated()
         {
-            var dx = End.X - Start.X;
-            var dy = End.Y - Start.Y;
-            var currentLength = Math.Sqrt(dx * dx + dy * dy);
-
-            return !(Math.Abs(currentLength - FixedLength) < Tolerance);
+            return !(Math.Abs(Length / FixedLength - 1) < 0.01);
         }
 
 
@@ -66,7 +63,7 @@
             var targetX = otherp.X + dir * newDx;
             var dampedX = Lerp(p.X, targetX, Dampening);
 
-            p.X = (int)Math.Round(dampedX);
+            p.X = ((float)Math.Round(dampedX));
         }
 
         public override void FixByY(Point p)
@@ -93,7 +90,7 @@
             var targetY = otherp.Y + dir * newDy;
             var dampedY = Lerp(p.Y, targetY, Dampening);
 
-            p.Y = (int)Math.Round(dampedY);
+            p.Y = ((float)Math.Round(dampedY));
         }
 
         public override void FixByXY(Point p)
@@ -117,8 +114,18 @@
             var dampedX = Lerp(p.X, targetXDouble, Dampening);
             var dampedY = Lerp(p.Y, targetYDouble, Dampening);
 
-            p.X = (int)Math.Round(dampedX);
-            p.Y = (int)Math.Round(dampedY);
+            p.X = ((float)Math.Round(dampedX));
+            p.Y = ((float)Math.Round(dampedY));
+        }
+
+        public override bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        {
+            return false;
+        }
+
+        public override bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        {
+            return false;
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace PolygonDrawer.Core.Edges.EdgeTypes
+﻿using System.Diagnostics;
+using System.Numerics;
+
+namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
     public sealed class VerticalEdge(Point start, Point end) : Edge(start, end)
     {
@@ -17,7 +20,7 @@
             }
 
             var otherp = Start == p ? End : Start;
-            var dampedX = (int)Lerp(p.X, otherp.X, Dampening);
+            var dampedX = Lerp(p.X, otherp.X, Dampening);
 
             p.X = dampedX;
         }
@@ -29,7 +32,17 @@
 
         public override bool ConstraintViolated()
         {
-            return Start.X != End.X;
+            return Math.Abs(Start.X - End.X) > CoreConstants.Eps;
+        }
+
+        public override bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        {
+            return false;
+        }
+
+        public override bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        {
+            return false;
         }
     }
 }

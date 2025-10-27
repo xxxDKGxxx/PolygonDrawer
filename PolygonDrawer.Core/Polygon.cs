@@ -1,5 +1,6 @@
 ﻿using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Edges.EdgeTypes;
+using PolygonDrawer.Core.Rendering;
 
 namespace PolygonDrawer.Core
 {
@@ -113,14 +114,29 @@ namespace PolygonDrawer.Core
                 bezierEdge.ControlPoint2 = new Point(
                     (oldEdge.Start.X + oldEdge.End.X) / 2,
                     oldEdge.End.Y);
+
                 Vertices.AddRange([bezierEdge.ControlPoint1, bezierEdge.ControlPoint2]);
             }
 
+            if (oldEdge is BezierEdge oldBezierEdge)
+            {
+                if (oldBezierEdge.ControlPoint1 != null)
+                {
+                    Vertices.Remove(oldBezierEdge.ControlPoint1);
+                }
+                if (oldBezierEdge.ControlPoint2 != null)
+                {
+                    Vertices.Remove(oldBezierEdge.ControlPoint2);
+                }
+            }
+
             RemoveEdge(oldEdge);
+
             Edges.Add(newEdge);
+
             ConstraintResolver.ResolveConstraints(this);
         }
-        public void Translate(int dx, int dy)
+        public void Translate(float dx, float dy)
         {
             foreach (var v in Vertices)
             {
@@ -135,9 +151,11 @@ namespace PolygonDrawer.Core
                 return;
             }
 
+            var movedVertOldPos = (p.X, p.Y);
+
             p.X = newX;
             p.Y = newY;
-            ConstraintResolver.ResolveConstraints(this, p);
+            ConstraintResolver.ResolveConstraints(this, p, movedVertOldPos);
         }
 
         public void ChangeLength(Edge e, int newLength)
@@ -146,7 +164,39 @@ namespace PolygonDrawer.Core
             {
                 return;
             }
+
             fle.FixedLength = newLength;
+
+            ConstraintResolver.ResolveConstraints(this);
+        }
+
+        public void SetVertexContinuity(Point p, ContinuuityType type)
+        {
+            if (!Vertices.Contains(p))
+            {
+                return;
+            }
+
+            p.Type = type;
+
+
+            if (type == ContinuuityType.G0)
+            {
+                var neighbors = GetEdgesByPoint(p);
+
+                foreach (var neighbor in neighbors)
+                {
+                    if (neighbor is not CircleEdge ce
+                        || ce.Start.Type != ContinuuityType.G0
+                        || ce.End.Type != ContinuuityType.G0)
+                    {
+                        continue;
+                    }
+
+                    ce.ResetMiddle();
+                }
+            }
+
             ConstraintResolver.ResolveConstraints(this);
         }
 
@@ -169,10 +219,10 @@ namespace PolygonDrawer.Core
             var neighbors = new List<Edge>();
             foreach (var edge in Edges)
             {
-                if (edge == e 
-                    || (edge.Start != e.Start 
-                        && edge.Start != e.End 
-                        && edge.End != e.Start 
+                if (edge == e
+                    || (edge.Start != e.Start
+                        && edge.Start != e.End
+                        && edge.End != e.Start
                         && edge.End != e.End))
                 {
                     continue;
@@ -182,7 +232,7 @@ namespace PolygonDrawer.Core
             return neighbors;
         }
 
-        public (int x, int y) GetCenter()
+        public (float x, float y) GetCenter()
         {
             if (Vertices.Count == 0)
             {
@@ -197,5 +247,6 @@ namespace PolygonDrawer.Core
         {
             Edges.Remove(e);
         }
+
     }
 }

@@ -39,8 +39,12 @@
             label2 = new Label();
             label1 = new Label();
             groupBox3 = new GroupBox();
+            c1RadioButton = new RadioButton();
+            g1RadioButton = new RadioButton();
+            g0RadioButton = new RadioButton();
             deleteVertexButton = new Button();
             groupBox4 = new GroupBox();
+            setLengthButton = new Button();
             circularRadioButton = new RadioButton();
             bezierRadioButton = new RadioButton();
             edgeLengthTextBox = new TextBox();
@@ -50,6 +54,9 @@
             normalRadioButton = new RadioButton();
             verticalRadioButton = new RadioButton();
             splitEdgeButton = new Button();
+            groupBox5 = new GroupBox();
+            customRenderingRadioButton = new RadioButton();
+            gdiRenderrRadioButton = new RadioButton();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainCanvas).BeginInit();
             flowLayoutPanel1.SuspendLayout();
@@ -57,6 +64,7 @@
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
+            groupBox5.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -89,6 +97,7 @@
             flowLayoutPanel1.Controls.Add(groupBox2);
             flowLayoutPanel1.Controls.Add(groupBox3);
             flowLayoutPanel1.Controls.Add(groupBox4);
+            flowLayoutPanel1.Controls.Add(groupBox5);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(593, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -167,6 +176,9 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(c1RadioButton);
+            groupBox3.Controls.Add(g1RadioButton);
+            groupBox3.Controls.Add(g0RadioButton);
             groupBox3.Controls.Add(deleteVertexButton);
             groupBox3.Dock = DockStyle.Top;
             groupBox3.Location = new Point(3, 215);
@@ -175,6 +187,39 @@
             groupBox3.TabIndex = 2;
             groupBox3.TabStop = false;
             groupBox3.Text = "Vertex Controls";
+            // 
+            // c1RadioButton
+            // 
+            c1RadioButton.AutoSize = true;
+            c1RadioButton.Location = new Point(94, 55);
+            c1RadioButton.Name = "c1RadioButton";
+            c1RadioButton.Size = new Size(39, 19);
+            c1RadioButton.TabIndex = 3;
+            c1RadioButton.TabStop = true;
+            c1RadioButton.Text = "C1";
+            c1RadioButton.UseVisualStyleBackColor = true;
+            // 
+            // g1RadioButton
+            // 
+            g1RadioButton.AutoSize = true;
+            g1RadioButton.Location = new Point(51, 54);
+            g1RadioButton.Name = "g1RadioButton";
+            g1RadioButton.Size = new Size(39, 19);
+            g1RadioButton.TabIndex = 2;
+            g1RadioButton.TabStop = true;
+            g1RadioButton.Text = "G1";
+            g1RadioButton.UseVisualStyleBackColor = true;
+            // 
+            // g0RadioButton
+            // 
+            g0RadioButton.AutoSize = true;
+            g0RadioButton.Location = new Point(6, 53);
+            g0RadioButton.Name = "g0RadioButton";
+            g0RadioButton.Size = new Size(39, 19);
+            g0RadioButton.TabIndex = 1;
+            g0RadioButton.TabStop = true;
+            g0RadioButton.Text = "G0";
+            g0RadioButton.UseVisualStyleBackColor = true;
             // 
             // deleteVertexButton
             // 
@@ -187,6 +232,7 @@
             // 
             // groupBox4
             // 
+            groupBox4.Controls.Add(setLengthButton);
             groupBox4.Controls.Add(circularRadioButton);
             groupBox4.Controls.Add(bezierRadioButton);
             groupBox4.Controls.Add(edgeLengthTextBox);
@@ -203,6 +249,15 @@
             groupBox4.TabIndex = 3;
             groupBox4.TabStop = false;
             groupBox4.Text = "Edge Controls";
+            // 
+            // setLengthButton
+            // 
+            setLengthButton.Location = new Point(193, 50);
+            setLengthButton.Name = "setLengthButton";
+            setLengthButton.Size = new Size(75, 23);
+            setLengthButton.TabIndex = 9;
+            setLengthButton.Text = "Set";
+            setLengthButton.UseVisualStyleBackColor = true;
             // 
             // circularRadioButton
             // 
@@ -295,6 +350,39 @@
             splitEdgeButton.Text = "Split";
             splitEdgeButton.UseVisualStyleBackColor = true;
             // 
+            // groupBox5
+            // 
+            groupBox5.Controls.Add(customRenderingRadioButton);
+            groupBox5.Controls.Add(gdiRenderrRadioButton);
+            groupBox5.Location = new Point(3, 469);
+            groupBox5.Name = "groupBox5";
+            groupBox5.Size = new Size(385, 100);
+            groupBox5.TabIndex = 4;
+            groupBox5.TabStop = false;
+            groupBox5.Text = "Render Options";
+            // 
+            // customRenderingRadioButton
+            // 
+            customRenderingRadioButton.AutoSize = true;
+            customRenderingRadioButton.Location = new Point(119, 29);
+            customRenderingRadioButton.Name = "customRenderingRadioButton";
+            customRenderingRadioButton.Size = new Size(124, 19);
+            customRenderingRadioButton.TabIndex = 1;
+            customRenderingRadioButton.TabStop = true;
+            customRenderingRadioButton.Text = "Custom Rendering";
+            customRenderingRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // gdiRenderrRadioButton
+            // 
+            gdiRenderrRadioButton.AutoSize = true;
+            gdiRenderrRadioButton.Location = new Point(13, 29);
+            gdiRenderrRadioButton.Name = "gdiRenderrRadioButton";
+            gdiRenderrRadioButton.Size = new Size(100, 19);
+            gdiRenderrRadioButton.TabIndex = 0;
+            gdiRenderrRadioButton.TabStop = true;
+            gdiRenderrRadioButton.Text = "Gdi Rendering";
+            gdiRenderrRadioButton.UseVisualStyleBackColor = true;
+            // 
             // PolygonDrawer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -312,8 +400,11 @@
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
             groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
+            groupBox5.ResumeLayout(false);
+            groupBox5.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -341,5 +432,12 @@
         private Label label3;
         private RadioButton bezierRadioButton;
         private RadioButton circularRadioButton;
+        private RadioButton g0RadioButton;
+        private RadioButton c1RadioButton;
+        private RadioButton g1RadioButton;
+        private GroupBox groupBox5;
+        private RadioButton customRenderingRadioButton;
+        private RadioButton gdiRenderrRadioButton;
+        private Button setLengthButton;
     }
 }

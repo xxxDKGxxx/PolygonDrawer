@@ -2,10 +2,27 @@
 {
     public interface IRenderer
     {
-        void DrawBezierCurve(int x1, int y1, int x2, int y2, int cp1x, int cp1y, int cp2x, int cp2y);
-        void DrawCircle(int middlex, int middley, float radius, int xfrom, int yfrom, int xto, int yto);
-        void DrawLine(int x1, int y1, int x2, int y2);
+        void DrawBezierCurve(
+            float x1,
+            float y1,
+            float x2,
+            float y2,
+            float cp1x,
+            float cp1y,
+            float cp2x,
+            float cp2y);
+
+        void DrawCircle(
+            float middlex,
+            float middley,
+            float radius,
+            float xfrom,
+            float yfrom,
+            float xto,
+            float yto);
+
+        void DrawLine(float x1, float y1, float x2, float y2);
         void DrawDashedLine(float x1, float y1, float x2, float y2);
-        void DrawPoint(int x, int y);
+        void DrawPoint(float x, float y);
     }
 }
