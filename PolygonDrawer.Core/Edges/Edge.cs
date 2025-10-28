@@ -4,11 +4,10 @@ using System.Numerics;
 
 namespace PolygonDrawer.Core.Edges
 {
-    [method: JsonConstructor]
-    public class Edge(Point start, Point end) : IRenderable
+    public class Edge : IRenderable
     {
-        public Point Start { get; } = start;
-        public Point End { get; } = end;
+        public Point Start { get; }
+        public Point End { get; }
 
         [JsonIgnore]
         public IRenderer? Renderer { get; set; } = null;
@@ -26,6 +25,15 @@ namespace PolygonDrawer.Core.Edges
         private static int _globalEdgeCounter = 0;
 
         private readonly int _edgeNum = _globalEdgeCounter++;
+        [JsonConstructor]
+        public Edge(Point start, Point end)
+        {
+            Start = start;
+            End = end;
+
+            Start.Type = ContinuuityType.G0;
+            End.Type = ContinuuityType.G0;
+        }
 
         public Edge(Edge e) : this(e.Start, e.End) { }
 
