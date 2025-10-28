@@ -6,7 +6,7 @@ namespace PolygonDrawer.Core
 
     internal sealed class ConstraintResolver
     {
-        private const int iterNum = 200000;
+        private const int iterNum = 100;
 
         internal static void ResolveConstraints(
             Polygon polygon,
@@ -44,6 +44,7 @@ namespace PolygonDrawer.Core
                         && v.ContinuuityViolated(connectedEdges[0], connectedEdges[1]);
                 }))
                 {
+                    Debug.WriteLine($"Finished with {i} iters");
                     return;
                 }
 

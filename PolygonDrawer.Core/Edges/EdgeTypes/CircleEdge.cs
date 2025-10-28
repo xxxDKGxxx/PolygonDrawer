@@ -105,17 +105,20 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
 
             tangent *= -1;
 
-            var perpendicularTangent = new Vector2(-tangent.Y, tangent.X);
+            tangent = Vector2.Normalize(tangent);
+
+            var perpendicularTangent = Vector2.Normalize(new Vector2(-tangent.Y, tangent.X));
             var middleX = (Start.X + End.X) / 2;
             var middleY = (Start.Y + End.Y) / 2;
-            var middleToP = new Vector2(p.X - middleX, p.Y - middleY);
-            var middleTangent = new Vector2(-middleToP.Y, middleToP.X);
+            var middleToP = Vector2.Normalize(new Vector2(p.X - middleX, p.Y - middleY));
+            var middleTangent = Vector2.Normalize(new Vector2(-middleToP.Y, middleToP.X));
 
+            var det = (perpendicularTangent.Y * middleTangent.X - middleTangent.Y * perpendicularTangent.X);
             var middleTangentCoeff = (middleY * perpendicularTangent.X
                     - p.Y * perpendicularTangent.X
                     - middleX * perpendicularTangent.Y
                     + p.X * perpendicularTangent.Y)
-                / (perpendicularTangent.Y * middleTangent.X - middleTangent.Y * perpendicularTangent.X);
+                / det;
 
             _middleXDelta = middleTangentCoeff * middleTangent.X;
             _middleYDelta = middleTangentCoeff * middleTangent.Y;
@@ -148,12 +151,11 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
                 AlignG1(_lastTangent.Value, Start, []);
             }
 
-            if (End.Type == ContinuuityType.G0)
+            if (End.Type != ContinuuityType.G0)
             {
-                return;
+                AlignG1(_lastTangent.Value, End, []);
             }
 
-            AlignG1(_lastTangent.Value, End, []);
         }
 
         public void ResetMiddle()

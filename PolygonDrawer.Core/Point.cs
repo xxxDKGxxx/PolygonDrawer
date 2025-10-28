@@ -67,7 +67,7 @@ namespace PolygonDrawer.Core
                 var numerator = a1 * b2 == 0 ? a2 * b1 : a1 * b2;
                 var denominator = numerator == a1 * b2 ? a2 * b1 : a1 * b2;
 
-                violated = violated || MathF.Abs(numerator / denominator - 1) > 0.01f;
+                violated = violated || MathF.Abs(a1 * b2 - a2 * b1) > 0.01f || Vector2.Dot(normalizedTangent1, normalizedTangent2) > -0.99f;
             }
 
             if (Type == ContinuuityType.C1)
