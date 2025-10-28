@@ -156,12 +156,12 @@ namespace PolygonDrawer.Core
                 return;
             }
 
-            //var dx = movedVert.X - movedVertOldPos.Value.Item1;
-            //var dy = movedVert.Y - movedVertOldPos.Value.Item2;
+            var dx = movedVert.X - movedVertOldPos.Value.Item1;
+            var dy = movedVert.Y - movedVertOldPos.Value.Item2;
 
-            //RestoreOldState(polygonState, polygon);
+            RestoreOldState(polygonState, polygon);
 
-            //polygon.Translate(dx, dy);
+            polygon.Translate(dx, dy);
         }
 
         private static void RestoreOldState(ResolverState resolverState, Polygon polygon)

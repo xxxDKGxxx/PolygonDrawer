@@ -119,6 +119,11 @@ namespace PolygonDrawer.Core.Edges
             return [Start, End];
         }
 
+        public virtual void Accept(IEdgeVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
         public override string ToString()
         {
             return $"Edge {_edgeNum}: {Start} -> {End}.";

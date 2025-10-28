@@ -128,6 +128,11 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
             return MathF.Abs(middleToStart - middleToEnd) > CoreConstants.Eps;
         }
 
+        public override void Accept(IEdgeVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
         public override void FixByX(Point p)
         {
             FixByXY(p);

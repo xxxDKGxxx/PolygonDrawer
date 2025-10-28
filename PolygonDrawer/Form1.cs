@@ -2,6 +2,7 @@ using PolygonDrawer.Core;
 using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Edges.EdgeTypes;
 using PolygonDrawer.Core.Rendering;
+using PolygonDrawer.EdgeVisitors;
 using PolygonDrawer.Renderers;
 
 namespace PolygonDrawer
@@ -356,7 +357,9 @@ namespace PolygonDrawer
 
             if (polygonCenter.x > mainCanvas.Width || polygonCenter.y > mainCanvas.Height)
             {
-                _polygon.Translate(mainCanvas.Width / 2 - polygonCenter.x, mainCanvas.Height / 2 - polygonCenter.y);
+                _polygon.Translate(
+                    mainCanvas.Width / 2 - polygonCenter.x,
+                    mainCanvas.Height / 2 - polygonCenter.y);
             }
 
             var graphics = e.Graphics;
@@ -378,7 +381,7 @@ namespace PolygonDrawer
 
                 vertex.Render();
 
-                var text = vertex.VertexNum.ToString();
+                var text = $"{vertex.VertexNum} ({vertex.Type})";
                 var textPos = new PointF(vertex.X + 6, vertex.Y - 8);
 
                 graphics.DrawString(text, font, Brushes.Black, textPos);
@@ -386,9 +389,12 @@ namespace PolygonDrawer
 
             renderers.ForEach(r => r.SetPointBrush(Brushes.Black));
 
+            var edgeLabelRenderer = new GdiEdgeLabelRenderer(graphics);
+
             foreach (var edge in _polygon.Edges)
             {
                 edge.Render();
+                edge.Accept(edgeLabelRenderer);
             }
         }
     }

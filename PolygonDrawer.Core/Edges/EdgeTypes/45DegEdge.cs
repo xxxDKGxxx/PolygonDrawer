@@ -82,5 +82,10 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
         {
             return false;
         }
+
+        public override void Accept(IEdgeVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

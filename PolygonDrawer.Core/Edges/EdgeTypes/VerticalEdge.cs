@@ -6,10 +6,17 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
     public sealed class VerticalEdge(Point start, Point end) : Edge(start, end)
     {
         private const double Dampening = 1;
+        
         public VerticalEdge(Edge e) : this(e.Start, e.End) { }
+        
         public override bool CanFixByY(Point p)
         {
             return false;
+        }
+
+        public override void Accept(IEdgeVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override void FixByX(Point p)

@@ -152,5 +152,10 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
         {
             return [Start, End, ControlPoint1, ControlPoint2];
         }
+
+        public override void Accept(IEdgeVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

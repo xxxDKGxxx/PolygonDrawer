@@ -20,7 +20,7 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
 
         public override bool ConstraintViolated()
         {
-            return !(Math.Abs(Length / FixedLength - 1) < 0.01);
+            return Math.Abs(Length - FixedLength) > 2;
         }
 
 
@@ -37,6 +37,11 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
             //var dx = End.X - Start.X;
             //return FixedLength * FixedLength - dx * dx >= 0;
             return false;
+        }
+
+        public override void Accept(IEdgeVisitor visitor)
+        {
+            visitor.Visit(this);
         }
 
         public override void FixByX(Point p)
