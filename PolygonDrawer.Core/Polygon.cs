@@ -44,6 +44,24 @@ namespace PolygonDrawer.Core
 
             var edgesToRemove = Edges.Where(e => e.Start == vertex || e.End == vertex);
 
+            foreach (var edge in edgesToRemove)
+            {
+                if (edge is not BezierEdge be)
+                {
+                    continue;
+                }
+
+                if (be.ControlPoint1 is not null)
+                {
+                    Vertices.Remove(be.ControlPoint1);
+                }
+
+                if (be.ControlPoint2 is not null)
+                {
+                    Vertices.Remove(be.ControlPoint2);
+                }
+            }
+
             var neighboringPoints = edgesToRemove
                 .Select(e => e.Start == vertex ? e.End : e.Start)
                 .ToList();

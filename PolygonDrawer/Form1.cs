@@ -27,6 +27,7 @@ namespace PolygonDrawer
             InitializeComponent();
             InitializeCanvas();
             SetButtonEvents();
+            LoadPolygonFromJson("predefined-scene.json");
         }
 
         private void SetButtonEvents()
@@ -450,6 +451,16 @@ namespace PolygonDrawer
 
             var path = openFileDialog.FileName;
 
+            bool flowControl = LoadPolygonFromJson(path);
+
+            if (!flowControl)
+            {
+                return;
+            }
+        }
+
+        private bool LoadPolygonFromJson(string path)
+        {
             var serialized = File.ReadAllText(path);
 
             var settings = new JsonSerializerSettings
@@ -464,12 +475,13 @@ namespace PolygonDrawer
             if (polygon is null)
             {
                 MessageBox.Show("Serialization failed.", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             _polygon = polygon;
             SetDefaultRenderer();
             mainCanvas.Invalidate();
+            return true;
         }
     }
 }

@@ -1,0 +1,133 @@
+{
+  "$id": "1",
+  "$type": "PolygonDrawer.Core.Polygon, PolygonDrawer.Core",
+  "Vertices": {
+    "$type": "System.Collections.Generic.List`1[[PolygonDrawer.Core.Point, PolygonDrawer.Core]], System.Private.CoreLib",
+    "$values": [
+      {
+        "$id": "2",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 433.33105,
+        "Y": 182.0,
+        "VertexNum": 0,
+        "Type": 2
+      },
+      {
+        "$id": "3",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 433.33105,
+        "Y": 363.96417,
+        "VertexNum": 1,
+        "Type": 0
+      },
+      {
+        "$id": "4",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 344.051,
+        "Y": 604.9625,
+        "VertexNum": 2,
+        "Type": 0
+      },
+      {
+        "$id": "5",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 119.0,
+        "Y": 380.0,
+        "VertexNum": 3,
+        "Type": 0
+      },
+      {
+        "$id": "6",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 210.0,
+        "Y": 342.0,
+        "VertexNum": 4,
+        "Type": 2
+      },
+      {
+        "$id": "7",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 240.33333,
+        "Y": 329.33334,
+        "VertexNum": 5,
+        "Type": 0
+      },
+      {
+        "$id": "8",
+        "$type": "PolygonDrawer.Core.Point, PolygonDrawer.Core",
+        "X": 433.46924,
+        "Y": 121.59497,
+        "VertexNum": 6,
+        "Type": 0
+      }
+    ]
+  },
+  "Edges": {
+    "$type": "System.Collections.Generic.List`1[[PolygonDrawer.Core.Edges.Edge, PolygonDrawer.Core]], System.Private.CoreLib",
+    "$values": [
+      {
+        "$id": "9",
+        "$type": "PolygonDrawer.Core.Edges.Edge, PolygonDrawer.Core",
+        "Start": {
+          "$ref": "5"
+        },
+        "End": {
+          "$ref": "6"
+        },
+        "Length": 98.61542
+      },
+      {
+        "$id": "10",
+        "$type": "PolygonDrawer.Core.Edges.EdgeTypes.BezierEdge, PolygonDrawer.Core",
+        "ControlPoint1": {
+          "$ref": "7"
+        },
+        "ControlPoint2": {
+          "$ref": "8"
+        },
+        "Start": {
+          "$ref": "6"
+        },
+        "End": {
+          "$ref": "2"
+        },
+        "Length": 274.73035
+      },
+      {
+        "$id": "11",
+        "$type": "PolygonDrawer.Core.Edges.EdgeTypes.FixedLengthEdge, PolygonDrawer.Core",
+        "FixedLength": 257,
+        "Start": {
+          "$ref": "3"
+        },
+        "End": {
+          "$ref": "4"
+        },
+        "Length": 257.00415
+      },
+      {
+        "$id": "12",
+        "$type": "PolygonDrawer.Core.Edges.EdgeTypes.Deg45Edge, PolygonDrawer.Core",
+        "Start": {
+          "$ref": "4"
+        },
+        "End": {
+          "$ref": "5"
+        },
+        "Length": 318.2076
+      },
+      {
+        "$id": "13",
+        "$type": "PolygonDrawer.Core.Edges.EdgeTypes.VerticalEdge, PolygonDrawer.Core",
+        "Start": {
+          "$ref": "2"
+        },
+        "End": {
+          "$ref": "3"
+        },
+        "Length": 181.96417
+      }
+    ]
+  },
+  "IsClosed": true
+}
