@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using Newtonsoft.Json;
+using PolygonDrawer.Core.Rendering;
+using System.Numerics;
 
 namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
@@ -17,6 +19,7 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
 
         }
 
+        [JsonConstructor]
         public CircleEdge(Point start, Point end) : base(start, end)
         {
             start.Type = start.Type == ContinuuityType.C1
@@ -133,17 +136,7 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
             visitor.Visit(this);
         }
 
-        public override void FixByX(Point p)
-        {
-            FixByXY(p);
-        }
-
-        public override void FixByY(Point p)
-        {
-            FixByXY(p);
-        }
-
-        public override void FixByXY(Point p)
+        public override void FixConstraint(HashSet<Point> fixedPoints)
         {
             if (_lastTangent is null)
             {

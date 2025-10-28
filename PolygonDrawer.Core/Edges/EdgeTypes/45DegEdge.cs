@@ -1,75 +1,57 @@
-﻿using System.Numerics;
+﻿using Newtonsoft.Json;
+using PolygonDrawer.Core.Rendering;
+using System.Numerics;
 
 namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
     public sealed class Deg45Edge : Edge
     {
-        private const double Dampening = 1;
-        public Deg45Edge(Edge e) : base(e) { }
+        [JsonConstructor]
+        public Deg45Edge(Point start, Point end) : base(start, end)
+        {
 
-        public Deg45Edge(Point start, Point end) : base(start, end) { }
+        }
+
+        public Deg45Edge(Edge e) : this(e.Start, e.End) { }
 
         public override bool ConstraintViolated()
         {
             return Math.Abs(Math.Abs(Start.X - End.X) - Math.Abs(Start.Y - End.Y)) > CoreConstants.Eps;
         }
 
-        public override void FixByX(Point p)
+        public override void FixConstraint(HashSet<Point> fixedPoints)
         {
             if (!ConstraintViolated())
             {
                 return;
             }
 
-            var otherp = Start == p ? End : Start;
-            var dy = Math.Abs(otherp.Y - p.Y);
+            var dx = Start.X - End.X;
+            var dy = Start.Y - End.Y;
+            var sx = MathF.Sign(dx);
+            var sy = MathF.Sign(dy);
+            var diff = MathF.Abs(dx) - MathF.Abs(dy);
+            var halfDiff = diff / 2f;
 
-            var newX = otherp.X > p.X ? otherp.X - dy : otherp.X + dy;
-            var dampedX = Lerp(p.X, newX, Dampening);
-
-            p.X = dampedX;
-        }
-
-        public override void FixByY(Point p)
-        {
-            if (!ConstraintViolated())
+            if (!fixedPoints.Contains(Start) && !fixedPoints.Contains(End))
             {
-                return;
+                var quarterDiff = halfDiff / 2f;
+
+                Start.X -= sx * quarterDiff;
+                End.X += sx * quarterDiff;
+
+                Start.Y += sy * quarterDiff;
+                End.Y -= sy * quarterDiff;
             }
-
-            var otherp = Start == p ? End : Start;
-            var dx = Math.Abs(otherp.X - p.X);
-
-            var newY = otherp.Y > p.Y ? otherp.Y - dx : otherp.Y + dx;
-            var dampedY = Lerp(p.Y, newY, Dampening);
-
-            p.Y = dampedY;
-        }
-
-        public override void FixByXY(Point p)
-        {
-            if (!ConstraintViolated())
+            else if (fixedPoints.Contains(Start))
             {
-                return;
+                End.X += sx * halfDiff;
+                End.Y -= sy * halfDiff;
             }
-
-            var otherp = Start == p ? End : Start;
-
-            var dx = Math.Abs(otherp.X - p.X);
-            var dy = Math.Abs(otherp.Y - p.Y);
-
-            var newX = otherp.X > p.X ? otherp.X - dy : otherp.X + dy;
-            var newY = otherp.Y > p.Y ? otherp.Y - dx : otherp.Y + dx;
-
-            if (Math.Abs(newX - p.X) < Math.Abs(newY - p.Y))
+            else if (fixedPoints.Contains(End))
             {
-                var dampedX = Lerp(p.X, newX, Dampening);
-                p.X = dampedX;
-            }
-            else
-            {
-                var dampedY = Lerp(p.Y, newY, Dampening);
-                p.Y = dampedY;
+                Start.X -= sx * halfDiff;
+                Start.Y += sy * halfDiff;
             }
         }
 

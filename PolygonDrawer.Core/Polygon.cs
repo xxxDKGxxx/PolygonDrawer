@@ -1,6 +1,5 @@
 ﻿using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Edges.EdgeTypes;
-using PolygonDrawer.Core.Rendering;
 
 namespace PolygonDrawer.Core
 {
@@ -9,7 +8,7 @@ namespace PolygonDrawer.Core
     {
         public List<Point> Vertices { get; } = [];
         public List<Edge> Edges { get; } = [];
-        public bool IsClosed { get; private set; } = false;
+        public bool IsClosed { get; set; } = false;
 
         public void AddVertex(Point vertex)
         {

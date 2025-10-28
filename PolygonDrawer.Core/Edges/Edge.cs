@@ -1,13 +1,16 @@
-﻿using PolygonDrawer.Core.Rendering;
+﻿using Newtonsoft.Json;
+using PolygonDrawer.Core.Rendering;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace PolygonDrawer.Core.Edges
 {
+    [method: JsonConstructor]
     public class Edge(Point start, Point end) : IRenderable
     {
         public Point Start { get; } = start;
         public Point End { get; } = end;
+
+        [JsonIgnore]
         public IRenderer? Renderer { get; set; } = null;
 
         public float Length
@@ -31,27 +34,7 @@ namespace PolygonDrawer.Core.Edges
             Renderer = renderer;
         }
 
-        public virtual bool CanFixByX(Point p)
-        {
-            return true;
-        }
-
-        public virtual bool CanFixByY(Point p)
-        {
-            return true;
-        }
-
-        public virtual void FixByX(Point p)
-        {
-
-        }
-
-        public virtual void FixByY(Point p)
-        {
-
-        }
-
-        public virtual void FixByXY(Point p)
+        public virtual void FixConstraint(HashSet<Point> fixedPoints)
         {
 
         }

@@ -1,40 +1,37 @@
-﻿using System.Diagnostics;
+﻿using Newtonsoft.Json;
+using PolygonDrawer.Core.Rendering;
 using System.Numerics;
 
 namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
+    [method: JsonConstructor]
     public sealed class VerticalEdge(Point start, Point end) : Edge(start, end)
     {
-        private const double Dampening = 1;
-        
         public VerticalEdge(Edge e) : this(e.Start, e.End) { }
-        
-        public override bool CanFixByY(Point p)
-        {
-            return false;
-        }
 
         public override void Accept(IEdgeVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        public override void FixByX(Point p)
+        public override void FixConstraint(HashSet<Point> fixedPoints)
         {
-            if (!ConstraintViolated())
+            var diffX = Start.X - End.X;
+
+            if (!fixedPoints.Contains(Start) && !fixedPoints.Contains(End))
             {
-                return;
+                var halfDiffX = diffX / 2f;
+                Start.X -= halfDiffX;
+                End.X += halfDiffX;
             }
-
-            var otherp = Start == p ? End : Start;
-            var dampedX = Lerp(p.X, otherp.X, Dampening);
-
-            p.X = dampedX;
-        }
-
-        public override void FixByXY(Point p)
-        {
-            FixByX(p);
+            else if (fixedPoints.Contains(Start))
+            {
+                End.X += diffX;
+            }
+            else if (fixedPoints.Contains(End))
+            {
+                Start.X -= diffX;
+            }
         }
 
         public override bool ConstraintViolated()

@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using Newtonsoft.Json;
+using PolygonDrawer.Core.Rendering;
+using System.Numerics;
 
 namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
@@ -7,6 +9,8 @@ namespace PolygonDrawer.Core.Edges.EdgeTypes
         public Point? ControlPoint1 { get; set; }
         public Point? ControlPoint2 { get; set; }
 
+
+        [JsonConstructor]
         public BezierEdge(Point start, Point end) : base(start, end)
         {
             start.Type = start.Type == ContinuuityType.G0 ? ContinuuityType.C1 : start.Type;

@@ -59,6 +59,8 @@
             gdiRenderrRadioButton = new RadioButton();
             menuStrip1 = new MenuStrip();
             helpToolStripMenuItem = new ToolStripMenuItem();
+            serializeToolStripMenuItem = new ToolStripMenuItem();
+            deserializeToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainCanvas).BeginInit();
             flowLayoutPanel1.SuspendLayout();
@@ -388,7 +390,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { helpToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { helpToolStripMenuItem, serializeToolStripMenuItem, deserializeToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1085, 24);
@@ -401,6 +403,20 @@
             helpToolStripMenuItem.Size = new Size(44, 20);
             helpToolStripMenuItem.Text = "Help";
             helpToolStripMenuItem.Click += HelpToolStripMenuItem_Click;
+            // 
+            // serializeToolStripMenuItem
+            // 
+            serializeToolStripMenuItem.Name = "serializeToolStripMenuItem";
+            serializeToolStripMenuItem.Size = new Size(61, 20);
+            serializeToolStripMenuItem.Text = "Serialize";
+            serializeToolStripMenuItem.Click += SerializeToolStripMenuItem_Click;
+            // 
+            // deserializeToolStripMenuItem
+            // 
+            deserializeToolStripMenuItem.Name = "deserializeToolStripMenuItem";
+            deserializeToolStripMenuItem.Size = new Size(74, 20);
+            deserializeToolStripMenuItem.Text = "Deserialize";
+            deserializeToolStripMenuItem.Click += DeserializeToolStripMenuItem_Click;
             // 
             // PolygonDrawer
             // 
@@ -466,5 +482,7 @@
         private Button setLengthButton;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem helpToolStripMenuItem;
+        private ToolStripMenuItem serializeToolStripMenuItem;
+        private ToolStripMenuItem deserializeToolStripMenuItem;
     }
 }

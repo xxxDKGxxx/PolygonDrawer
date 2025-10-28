@@ -28,6 +28,12 @@ namespace PolygonDrawer.Core
 
             var i = 0;
             var random = new Random();
+            var fixedPoints = new HashSet<Point>();
+
+            if (movedVert is not null)
+            {
+                fixedPoints.Add(movedVert);
+            }
 
             for (; i < iterNum; i++)
             {
@@ -41,84 +47,10 @@ namespace PolygonDrawer.Core
                     return;
                 }
 
-                random.Shuffle<Point>(verticies!);
-
-                foreach (var point in verticies)
+                foreach(var edge in polygon.Edges)
                 {
-                    if (point is null || point == movedVert)
-                    {
-                        continue;
-                    }
-
-                    var connectedEdges = polygon.GetEdgesByPoint(point);
-
-                    if (connectedEdges.Count != 2)
-                    {
-                        continue;
-                    }
-
-                    if (!connectedEdges.Any(e => e.ConstraintViolated()))
-                    {
-                        continue;
-                    }
-
-                    if (connectedEdges.All(e => e.ConstraintViolated()))
-                    {
-                        if (connectedEdges[0].CanFixByX(point) && connectedEdges[1].CanFixByY(point))
-                        {
-                            connectedEdges[0].FixByX(point);
-                            connectedEdges[1].FixByY(point);
-                        }
-                        else if (connectedEdges[0].CanFixByY(point) && connectedEdges[1].CanFixByX(point))
-                        {
-                            connectedEdges[0].FixByY(point);
-                            connectedEdges[1].FixByX(point);
-                        }
-                        else
-                        {
-                            connectedEdges[0].FixByXY(point);
-                        }
-                        continue;
-                    }
-
-                    var edgeToFix = connectedEdges.First(e => e.ConstraintViolated());
-                    var otherEdge = connectedEdges.First(e => !e.ConstraintViolated());
-
-                    if (edgeToFix.CanFixByX(point))
-                    {
-                        var originalX = point.X;
-                        edgeToFix.FixByX(point);
-
-                        if (otherEdge.ConstraintViolated() && !otherEdge.CanFixByY(point))
-                        {
-                            point.X = originalX;
-                        }
-                        else
-                        {
-                            otherEdge.FixByY(point);
-                            continue;
-                        }
-                    }
-
-                    if (edgeToFix.CanFixByY(point))
-                    {
-                        var originalY = point.Y;
-                        edgeToFix.FixByY(point);
-                        if (otherEdge.ConstraintViolated() && !otherEdge.CanFixByX(point))
-                        {
-                            point.Y = originalY;
-                        }
-                        else
-                        {
-                            otherEdge.FixByX(point);
-                            continue;
-                        }
-                    }
-
-                    edgeToFix.FixByXY(point);
+                    edge.FixConstraint(fixedPoints);
                 }
-
-                random.Shuffle<Point>(verticies!);
 
                 foreach (var point in verticies)
                 {
@@ -132,13 +64,6 @@ namespace PolygonDrawer.Core
                     if (connectedEdges.Count != 2)
                     {
                         continue;
-                    }
-
-                    var fixedPoints = new HashSet<Point>();
-
-                    if (movedVert is not null)
-                    {
-                        fixedPoints.Add(movedVert);
                     }
 
                     var randIdx = random.Next(0, 2);

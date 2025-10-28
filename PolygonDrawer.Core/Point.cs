@@ -1,19 +1,30 @@
-﻿using PolygonDrawer.Core.Edges;
+﻿using Newtonsoft.Json;
+using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Rendering;
-using System.Drawing;
 using System.Numerics;
 
 namespace PolygonDrawer.Core
 {
-    public sealed class Point(float x, float y, ContinuuityType pointType = ContinuuityType.G0) : IRenderable
+    public sealed class Point : IRenderable
     {
-        public float X { get; set; } = x;
-        public float Y { get; set; } = y;
+        public float X { get; set; }
+        public float Y { get; set; }
         public int VertexNum { get; } = _globalVertexCounter++;
-        public ContinuuityType Type { get; set; } = pointType;
+        public ContinuuityType Type { get; set; }
+
+        [JsonIgnore]
         public IRenderer? Renderer { get; set; } = null;
 
         private static int _globalVertexCounter = 0;
+
+
+        [JsonConstructor]
+        public Point(float x, float y, ContinuuityType pointType = ContinuuityType.G0)
+        {
+            X = x;
+            Y = y;
+            Type = pointType;
+        }
 
         public void SetRenderer(IRenderer renderer)
         {

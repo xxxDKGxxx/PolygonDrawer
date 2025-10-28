@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using PolygonDrawer.Core;
 using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Edges.EdgeTypes;
@@ -9,10 +10,10 @@ namespace PolygonDrawer
 {
     public partial class PolygonDrawer : Form
     {
-        private readonly Polygon _polygon = new();
         private readonly GdiRenderer _gdiRenderer = new();
         private readonly CustomRenderer _customRenderer = new();
         private List<IGdiRenderer> Renderers => [_gdiRenderer, _customRenderer];
+        private Polygon _polygon = new();
 
         private Core.Point? _selectedVert = null;
         private Edge? _selectedEdge = null;
@@ -403,6 +404,72 @@ namespace PolygonDrawer
             var dialog = new HelpForm();
 
             dialog.ShowDialog();
+        }
+
+        private void SerializeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Pliki json (.json)|*.json"
+            };
+
+            var dialogResult = saveFileDialog.ShowDialog();
+
+            if (dialogResult != DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = saveFileDialog.FileName;
+
+            var settings = new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            var serialized = JsonConvert.SerializeObject(_polygon, settings);
+
+            File.WriteAllText(path, serialized);
+        }
+
+        private void DeserializeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Pliki json (.json)|*.json"
+            };
+
+            var dialogResult = openFileDialog.ShowDialog();
+
+            if (dialogResult != DialogResult.OK)
+            {
+                return;
+            }
+
+            var path = openFileDialog.FileName;
+
+            var serialized = File.ReadAllText(path);
+
+            var settings = new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            var polygon = JsonConvert.DeserializeObject<Polygon>(serialized, settings);
+
+            if (polygon is null)
+            {
+                MessageBox.Show("Serialization failed.", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            _polygon = polygon;
+            SetDefaultRenderer();
+            mainCanvas.Invalidate();
         }
     }
 }
