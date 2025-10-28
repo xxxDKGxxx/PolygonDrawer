@@ -62,13 +62,9 @@ namespace PolygonDrawer.Core
             var b1 = normalizedTangent2.X;
             var b2 = normalizedTangent2.Y;
 
-            if (a2 * b1 != 0 || a1 * b2 != 0)
-            {
-                var numerator = a1 * b2 == 0 ? a2 * b1 : a1 * b2;
-                var denominator = numerator == a1 * b2 ? a2 * b1 : a1 * b2;
-
-                violated = violated || MathF.Abs(a1 * b2 - a2 * b1) > 0.01f || Vector2.Dot(normalizedTangent1, normalizedTangent2) > -0.99f;
-            }
+            violated = violated
+                || MathF.Abs(a1 * b2 - a2 * b1) > 0.01f
+                || Vector2.Dot(normalizedTangent1, normalizedTangent2) > -0.99f;
 
             if (Type == ContinuuityType.C1)
             {
