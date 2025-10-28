@@ -119,7 +119,7 @@
             groupBox1.Size = new Size(385, 100);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
-            groupBox1.Text = "groupBox1";
+            groupBox1.Text = "Polygon Controls";
             // 
             // resetButton
             // 
