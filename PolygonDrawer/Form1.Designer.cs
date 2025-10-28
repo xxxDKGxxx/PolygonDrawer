@@ -57,6 +57,8 @@
             groupBox5 = new GroupBox();
             customRenderingRadioButton = new RadioButton();
             gdiRenderrRadioButton = new RadioButton();
+            menuStrip1 = new MenuStrip();
+            helpToolStripMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainCanvas).BeginInit();
             flowLayoutPanel1.SuspendLayout();
@@ -65,6 +67,7 @@
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox5.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -75,11 +78,11 @@
             tableLayoutPanel1.Controls.Add(mainCanvas, 0, 0);
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 0);
+            tableLayoutPanel1.Location = new Point(0, 24);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(984, 561);
+            tableLayoutPanel1.Size = new Size(1085, 707);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // mainCanvas
@@ -87,7 +90,7 @@
             mainCanvas.Dock = DockStyle.Fill;
             mainCanvas.Location = new Point(3, 3);
             mainCanvas.Name = "mainCanvas";
-            mainCanvas.Size = new Size(584, 555);
+            mainCanvas.Size = new Size(645, 701);
             mainCanvas.TabIndex = 0;
             mainCanvas.TabStop = false;
             // 
@@ -99,9 +102,9 @@
             flowLayoutPanel1.Controls.Add(groupBox4);
             flowLayoutPanel1.Controls.Add(groupBox5);
             flowLayoutPanel1.Dock = DockStyle.Fill;
-            flowLayoutPanel1.Location = new Point(593, 3);
+            flowLayoutPanel1.Location = new Point(654, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(388, 555);
+            flowLayoutPanel1.Size = new Size(428, 701);
             flowLayoutPanel1.TabIndex = 1;
             // 
             // groupBox1
@@ -202,7 +205,7 @@
             // g1RadioButton
             // 
             g1RadioButton.AutoSize = true;
-            g1RadioButton.Location = new Point(51, 54);
+            g1RadioButton.Location = new Point(46, 55);
             g1RadioButton.Name = "g1RadioButton";
             g1RadioButton.Size = new Size(39, 19);
             g1RadioButton.TabIndex = 2;
@@ -213,7 +216,7 @@
             // g0RadioButton
             // 
             g0RadioButton.AutoSize = true;
-            g0RadioButton.Location = new Point(6, 53);
+            g0RadioButton.Location = new Point(1, 55);
             g0RadioButton.Name = "g0RadioButton";
             g0RadioButton.Size = new Size(39, 19);
             g0RadioButton.TabIndex = 1;
@@ -383,13 +386,32 @@
             gdiRenderrRadioButton.Text = "Gdi Rendering";
             gdiRenderrRadioButton.UseVisualStyleBackColor = true;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { helpToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1085, 24);
+            menuStrip1.TabIndex = 1;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // helpToolStripMenuItem
+            // 
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new Size(44, 20);
+            helpToolStripMenuItem.Text = "Help";
+            helpToolStripMenuItem.Click += HelpToolStripMenuItem_Click;
+            // 
             // PolygonDrawer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(984, 561);
+            ClientSize = new Size(1085, 731);
             Controls.Add(tableLayoutPanel1);
+            Controls.Add(menuStrip1);
             FormBorderStyle = FormBorderStyle.Fixed3D;
+            MainMenuStrip = menuStrip1;
+            MaximizeBox = false;
             Name = "PolygonDrawer";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
@@ -405,7 +427,10 @@
             groupBox4.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -439,5 +464,7 @@
         private RadioButton customRenderingRadioButton;
         private RadioButton gdiRenderrRadioButton;
         private Button setLengthButton;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem helpToolStripMenuItem;
     }
 }

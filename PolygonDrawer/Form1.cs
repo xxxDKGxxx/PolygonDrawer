@@ -397,5 +397,12 @@ namespace PolygonDrawer
                 edge.Accept(edgeLabelRenderer);
             }
         }
+
+        private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dialog = new HelpForm();
+
+            dialog.ShowDialog();
+        }
     }
 }
