@@ -47,7 +47,7 @@ namespace PolygonDrawer.Core
                     return;
                 }
 
-                foreach(var edge in polygon.Edges)
+                foreach (var edge in polygon.Edges)
                 {
                     edge.FixConstraint(fixedPoints);
                 }

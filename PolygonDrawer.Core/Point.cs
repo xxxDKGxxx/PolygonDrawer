@@ -5,26 +5,18 @@ using System.Numerics;
 
 namespace PolygonDrawer.Core
 {
-    public sealed class Point : IRenderable
+    [method: JsonConstructor]
+    public sealed class Point(float x, float y, ContinuuityType pointType = ContinuuityType.G0) : IRenderable
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        public float X { get; set; } = x;
+        public float Y { get; set; } = y;
         public int VertexNum { get; } = _globalVertexCounter++;
-        public ContinuuityType Type { get; set; }
+        public ContinuuityType Type { get; set; } = pointType;
 
         [JsonIgnore]
         public IRenderer? Renderer { get; set; } = null;
 
         private static int _globalVertexCounter = 0;
-
-
-        [JsonConstructor]
-        public Point(float x, float y, ContinuuityType pointType = ContinuuityType.G0)
-        {
-            X = x;
-            Y = y;
-            Type = pointType;
-        }
 
         public void SetRenderer(IRenderer renderer)
         {

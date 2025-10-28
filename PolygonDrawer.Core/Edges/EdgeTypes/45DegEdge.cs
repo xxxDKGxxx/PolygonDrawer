@@ -4,14 +4,9 @@ using System.Numerics;
 
 namespace PolygonDrawer.Core.Edges.EdgeTypes
 {
-    public sealed class Deg45Edge : Edge
+    [method: JsonConstructor]
+    public sealed class Deg45Edge(Point start, Point end) : Edge(start, end)
     {
-        [JsonConstructor]
-        public Deg45Edge(Point start, Point end) : base(start, end)
-        {
-
-        }
-
         public Deg45Edge(Edge e) : this(e.Start, e.End) { }
 
         public override bool ConstraintViolated()
