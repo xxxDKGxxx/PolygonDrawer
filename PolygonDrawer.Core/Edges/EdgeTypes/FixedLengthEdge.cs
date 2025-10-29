@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using PolygonDrawer.Core.Rendering;
-using System.Numerics;
-
-namespace PolygonDrawer.Core.Edges.EdgeTypes;
+﻿namespace PolygonDrawer.Core.Edges.EdgeTypes;
 
 public sealed class FixedLengthEdge : Edge
 {

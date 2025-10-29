@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using PolygonDrawer.Core.Edges;
-using PolygonDrawer.Core.Rendering;
-using System.Numerics;
-
-namespace PolygonDrawer.Core;
+﻿namespace PolygonDrawer.Core;
 
 [method: JsonConstructor]
 public sealed class Point(float x, float y, ContinuuityType pointType = ContinuuityType.G0) : IRenderable

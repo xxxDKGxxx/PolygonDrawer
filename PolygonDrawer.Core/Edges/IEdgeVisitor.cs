@@ -1,6 +1,4 @@
-﻿using PolygonDrawer.Core.Edges.EdgeTypes;
-
-namespace PolygonDrawer.Core.Edges;
+﻿namespace PolygonDrawer.Core.Edges;
 
 public interface IEdgeVisitor
 {

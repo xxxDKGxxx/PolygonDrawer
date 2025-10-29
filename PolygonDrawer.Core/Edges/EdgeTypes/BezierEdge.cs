@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Numerics;
-
-namespace PolygonDrawer.Core.Edges.EdgeTypes;
+﻿namespace PolygonDrawer.Core.Edges.EdgeTypes;
 
 public class BezierEdge : Edge
 {

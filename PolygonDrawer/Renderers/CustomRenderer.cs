@@ -1,8 +1,4 @@
-﻿using PolygonDrawer.Core.Rendering;
-using System.Drawing.Drawing2D;
-using System.Numerics;
-
-namespace PolygonDrawer.Renderers;
+﻿namespace PolygonDrawer.Renderers;
 
 internal sealed class CustomRenderer : IRenderer, IGdiRenderer
 {

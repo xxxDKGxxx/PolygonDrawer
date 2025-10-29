@@ -1,7 +1,4 @@
-﻿using PolygonDrawer.Core.Rendering;
-using System.Drawing.Drawing2D;
-
-namespace PolygonDrawer.Renderers;
+﻿namespace PolygonDrawer.Renderers;
 
 internal sealed class GdiRenderer() : IRenderer, IGdiRenderer
 {

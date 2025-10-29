@@ -1,7 +1,4 @@
-﻿using PolygonDrawer.Core.Edges;
-using PolygonDrawer.Core.Edges.EdgeTypes;
-
-namespace PolygonDrawer.EdgeVisitors;
+﻿namespace PolygonDrawer.EdgeVisitors;
 
 internal class GdiEdgeLabelRenderer(Graphics graphics) : IEdgeVisitor
 {

@@ -1,13 +1,9 @@
-﻿using Newtonsoft.Json;
-using PolygonDrawer.Core.Rendering;
-using System.Numerics;
-
-namespace PolygonDrawer.Core.Edges;
+﻿namespace PolygonDrawer.Core.Edges;
 
 public class Edge : IRenderable
 {
-    public Point Start { get; }
-    public Point End { get; }
+    public Point Start { get; set; }
+    public Point End { get; set; }
 
     [JsonIgnore]
     public IRenderer? Renderer { get; set; } = null;

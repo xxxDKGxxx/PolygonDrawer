@@ -1,7 +1,4 @@
-﻿using PolygonDrawer.Core.Edges;
-using PolygonDrawer.Core.Edges.EdgeTypes;
-
-namespace PolygonDrawer.Core;
+﻿namespace PolygonDrawer.Core;
 
 public sealed class Polygon
 {

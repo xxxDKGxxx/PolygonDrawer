@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using PolygonDrawer.Core.Rendering;
-using System.Numerics;
-
-namespace PolygonDrawer.Core.Edges.EdgeTypes;
+﻿namespace PolygonDrawer.Core.Edges.EdgeTypes;
 
 public sealed class CircleEdge : Edge
 {
@@ -13,6 +9,7 @@ public sealed class CircleEdge : Edge
     private float Radius => (float)Math.Sqrt(Math.Pow(End.X - MiddleX, 2)
         + Math.Pow(End.Y - MiddleY, 2));
     private Vector2? _lastTangent = null;
+    private bool _isFlipped = false;
 
     public CircleEdge(Edge e) : this(e.Start, e.End)
     {
@@ -34,7 +31,14 @@ public sealed class CircleEdge : Edge
 
     public override void Render()
     {
-        Renderer?.DrawCircle(MiddleX, MiddleY, Radius, Start.X, Start.Y, End.X, End.Y);
+        if (_isFlipped)
+        {
+            Renderer?.DrawCircle(MiddleX, MiddleY, Radius, End.X, End.Y, Start.X, Start.Y);
+        }
+        else
+        {
+            Renderer?.DrawCircle(MiddleX, MiddleY, Radius, Start.X, Start.Y, End.X, End.Y);
+        }
     }
 
     public override Vector2 GetTangentAtEnd(Point p)
@@ -57,6 +61,11 @@ public sealed class CircleEdge : Edge
             ResetMiddle();
         }
 
+        if (_isFlipped)
+        {
+            (Start, End) = (End, Start);
+        }
+
         if (p == Start)
         {
             var baseAngle = (float)Math.Atan2(Start.Y - MiddleY, Start.X - MiddleX);
@@ -65,6 +74,11 @@ public sealed class CircleEdge : Edge
             if (angleDiff < 0)
             {
                 angleDiff += 2 * Math.PI;
+            }
+
+            if (_isFlipped)
+            {
+                (Start, End) = (End, Start);
             }
 
             return Radius * new Vector2(
@@ -81,6 +95,11 @@ public sealed class CircleEdge : Edge
             if (angleDiff > 0)
             {
                 angleDiff -= 2 * Math.PI;
+            }
+
+            if (_isFlipped)
+            {
+                (Start, End) = (End, Start);
             }
 
             return Radius * new Vector2(
@@ -101,9 +120,21 @@ public sealed class CircleEdge : Edge
         tangent = Vector2.Normalize(tangent);
 
         var perpendicularTangent = Vector2.Normalize(new Vector2(-tangent.Y, tangent.X));
+        var betweenPoints = new Vector2(End.X - Start.X, End.Y - Start.Y);
+        var normalizedBetweenPoints = Vector2.Normalize(betweenPoints);
+
+        _isFlipped = Vector2.Dot(perpendicularTangent, normalizedBetweenPoints) < 0;
+
         var middleX = (Start.X + End.X) / 2;
         var middleY = (Start.Y + End.Y) / 2;
-        var middleToP = Vector2.Normalize(new Vector2(p.X - middleX, p.Y - middleY));
+        var dirToP = new Vector2(p.X - middleX, p.Y - middleY);
+
+        if (dirToP.LengthSquared() < 1e-8f)
+        {
+            return false;
+        }
+
+        var middleToP = Vector2.Normalize(dirToP);
         var middleTangent = Vector2.Normalize(new Vector2(-middleToP.Y, middleToP.X));
 
         var det = perpendicularTangent.Y * middleTangent.X - middleTangent.Y * perpendicularTangent.X;
@@ -134,7 +165,7 @@ public sealed class CircleEdge : Edge
 
     public override void FixConstraint(HashSet<Point> fixedPoints)
     {
-        if (_lastTangent is null)
+        if (_lastTangent is null || !ConstraintViolated())
         {
             return;
         }
@@ -142,11 +173,13 @@ public sealed class CircleEdge : Edge
         if (Start.Type != ContinuuityType.G0)
         {
             _ = AlignG1(_lastTangent.Value, Start, []);
+            return;
         }
 
         if (End.Type != ContinuuityType.G0)
         {
             _ = AlignG1(_lastTangent.Value, End, []);
+            return;
         }
     }
 
@@ -154,5 +187,6 @@ public sealed class CircleEdge : Edge
     {
         _middleXDelta = 0;
         _middleYDelta = 0;
+        _isFlipped = false;
     }
 }

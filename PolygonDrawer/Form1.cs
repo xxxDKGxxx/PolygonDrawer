@@ -1,10 +1,4 @@
-using Newtonsoft.Json;
 using PolygonDrawer.Core;
-using PolygonDrawer.Core.Edges;
-using PolygonDrawer.Core.Edges.EdgeTypes;
-using PolygonDrawer.Core.Rendering;
-using PolygonDrawer.EdgeVisitors;
-using PolygonDrawer.Renderers;
 
 namespace PolygonDrawer;
 

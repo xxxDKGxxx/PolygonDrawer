@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace PolygonDrawer.Core;
+﻿namespace PolygonDrawer.Core;
 
 internal sealed record ResolverState(IDictionary<Point, (float, float)> State);
 
@@ -74,8 +72,6 @@ internal sealed class ConstraintResolver
                     fixedPoints);
             }
         }
-
-        Debug.WriteLine($"{DateTime.Now} Constraint resolver reached {i} iters");
 
         if (movedVert is null || movedVertOldPos is null)
         {
