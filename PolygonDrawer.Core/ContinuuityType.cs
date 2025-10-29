@@ -1,9 +1,8 @@
-﻿namespace PolygonDrawer.Core
+﻿namespace PolygonDrawer.Core;
+
+public enum ContinuuityType
 {
-    public enum ContinuuityType
-    {
-        G0,
-        G1,
-        C1,
-    }
+    G0,
+    G1,
+    C1,
 }

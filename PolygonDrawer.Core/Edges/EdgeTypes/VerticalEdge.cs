@@ -2,51 +2,50 @@
 using PolygonDrawer.Core.Rendering;
 using System.Numerics;
 
-namespace PolygonDrawer.Core.Edges.EdgeTypes
+namespace PolygonDrawer.Core.Edges.EdgeTypes;
+
+[method: JsonConstructor]
+public sealed class VerticalEdge(Point start, Point end) : Edge(start, end)
 {
-    [method: JsonConstructor]
-    public sealed class VerticalEdge(Point start, Point end) : Edge(start, end)
+    public VerticalEdge(Edge e) : this(e.Start, e.End) { }
+
+    public override void Accept(IEdgeVisitor visitor)
     {
-        public VerticalEdge(Edge e) : this(e.Start, e.End) { }
+        visitor.Visit(this);
+    }
 
-        public override void Accept(IEdgeVisitor visitor)
+    public override void FixConstraint(HashSet<Point> fixedPoints)
+    {
+        var diffX = Start.X - End.X;
+
+        if (!fixedPoints.Contains(Start) && !fixedPoints.Contains(End))
         {
-            visitor.Visit(this);
+            var halfDiffX = diffX / 2f;
+            Start.X -= halfDiffX;
+            End.X += halfDiffX;
         }
-
-        public override void FixConstraint(HashSet<Point> fixedPoints)
+        else if (fixedPoints.Contains(Start))
         {
-            var diffX = Start.X - End.X;
-
-            if (!fixedPoints.Contains(Start) && !fixedPoints.Contains(End))
-            {
-                var halfDiffX = diffX / 2f;
-                Start.X -= halfDiffX;
-                End.X += halfDiffX;
-            }
-            else if (fixedPoints.Contains(Start))
-            {
-                End.X += diffX;
-            }
-            else if (fixedPoints.Contains(End))
-            {
-                Start.X -= diffX;
-            }
+            End.X += diffX;
         }
-
-        public override bool ConstraintViolated()
+        else if (fixedPoints.Contains(End))
         {
-            return Math.Abs(Start.X - End.X) > CoreConstants.Eps;
+            Start.X -= diffX;
         }
+    }
 
-        public override bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
-        {
-            return false;
-        }
+    public override bool ConstraintViolated()
+    {
+        return Math.Abs(Start.X - End.X) > CoreConstants.Eps;
+    }
 
-        public override bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
-        {
-            return false;
-        }
+    public override bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+    {
+        return false;
+    }
+
+    public override bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+    {
+        return false;
     }
 }

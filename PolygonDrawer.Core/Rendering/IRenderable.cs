@@ -1,8 +1,7 @@
-﻿namespace PolygonDrawer.Core.Rendering
+﻿namespace PolygonDrawer.Core.Rendering;
+
+public interface IRenderable
 {
-    public interface IRenderable
-    {
-        void Render();
-        void SetRenderer(IRenderer renderer);
-    }
+    void Render();
+    void SetRenderer(IRenderer renderer);
 }

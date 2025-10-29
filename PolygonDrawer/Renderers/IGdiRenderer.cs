@@ -1,8 +1,7 @@
-﻿namespace PolygonDrawer.Renderers
+﻿namespace PolygonDrawer.Renderers;
+
+internal interface IGdiRenderer
 {
-    internal interface IGdiRenderer
-    {
-        void SetGraphics(Graphics graphics);
-        void SetPointBrush(Brush brush);
-    }
+    void SetGraphics(Graphics graphics);
+    void SetPointBrush(Brush brush);
 }

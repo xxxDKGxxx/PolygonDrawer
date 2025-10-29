@@ -2,67 +2,66 @@
 using PolygonDrawer.Core.Rendering;
 using System.Numerics;
 
-namespace PolygonDrawer.Core.Edges.EdgeTypes
+namespace PolygonDrawer.Core.Edges.EdgeTypes;
+
+[method: JsonConstructor]
+public sealed class Deg45Edge(Point start, Point end) : Edge(start, end)
 {
-    [method: JsonConstructor]
-    public sealed class Deg45Edge(Point start, Point end) : Edge(start, end)
+    public Deg45Edge(Edge e) : this(e.Start, e.End) { }
+
+    public override bool ConstraintViolated()
     {
-        public Deg45Edge(Edge e) : this(e.Start, e.End) { }
+        return Math.Abs(Math.Abs(Start.X - End.X) - Math.Abs(Start.Y - End.Y)) > CoreConstants.Eps;
+    }
 
-        public override bool ConstraintViolated()
+    public override void FixConstraint(HashSet<Point> fixedPoints)
+    {
+        if (!ConstraintViolated())
         {
-            return Math.Abs(Math.Abs(Start.X - End.X) - Math.Abs(Start.Y - End.Y)) > CoreConstants.Eps;
+            return;
         }
 
-        public override void FixConstraint(HashSet<Point> fixedPoints)
+        var dx = Start.X - End.X;
+        var dy = Start.Y - End.Y;
+        var sx = MathF.Sign(dx);
+        var sy = MathF.Sign(dy);
+        var diff = MathF.Abs(dx) - MathF.Abs(dy);
+        var halfDiff = diff / 2f;
+
+        if (!fixedPoints.Contains(Start) && !fixedPoints.Contains(End))
         {
-            if (!ConstraintViolated())
-            {
-                return;
-            }
+            var quarterDiff = halfDiff / 2f;
 
-            var dx = Start.X - End.X;
-            var dy = Start.Y - End.Y;
-            var sx = MathF.Sign(dx);
-            var sy = MathF.Sign(dy);
-            var diff = MathF.Abs(dx) - MathF.Abs(dy);
-            var halfDiff = diff / 2f;
+            Start.X -= sx * quarterDiff;
+            End.X += sx * quarterDiff;
 
-            if (!fixedPoints.Contains(Start) && !fixedPoints.Contains(End))
-            {
-                var quarterDiff = halfDiff / 2f;
-
-                Start.X -= sx * quarterDiff;
-                End.X += sx * quarterDiff;
-
-                Start.Y += sy * quarterDiff;
-                End.Y -= sy * quarterDiff;
-            }
-            else if (fixedPoints.Contains(Start))
-            {
-                End.X += sx * halfDiff;
-                End.Y -= sy * halfDiff;
-            }
-            else if (fixedPoints.Contains(End))
-            {
-                Start.X -= sx * halfDiff;
-                Start.Y += sy * halfDiff;
-            }
+            Start.Y += sy * quarterDiff;
+            End.Y -= sy * quarterDiff;
         }
-
-        public override bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        else if (fixedPoints.Contains(Start))
         {
-            return false;
+            End.X += sx * halfDiff;
+            End.Y -= sy * halfDiff;
         }
-
-        public override bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+        else if (fixedPoints.Contains(End))
         {
-            return false;
+            Start.X -= sx * halfDiff;
+            Start.Y += sy * halfDiff;
         }
+    }
 
-        public override void Accept(IEdgeVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+    public override bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+    {
+        return false;
+    }
+
+    public override bool AlignC1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
+    {
+        return false;
+    }
+
+    public override void Accept(IEdgeVisitor visitor)
+    {
+        visitor.Visit(this);
     }
 }

@@ -1,269 +1,273 @@
 ﻿using PolygonDrawer.Core.Edges;
 using PolygonDrawer.Core.Edges.EdgeTypes;
 
-namespace PolygonDrawer.Core
+namespace PolygonDrawer.Core;
+
+public sealed class Polygon
 {
+    public List<Point> Vertices { get; } = [];
+    public List<Edge> Edges { get; } = [];
+    public bool IsClosed { get; set; } = false;
 
-    public sealed class Polygon
+    public void AddVertex(Point vertex)
     {
-        public List<Point> Vertices { get; } = [];
-        public List<Edge> Edges { get; } = [];
-        public bool IsClosed { get; set; } = false;
-
-        public void AddVertex(Point vertex)
+        if (IsClosed)
         {
-            if (IsClosed)
-            {
-                return;
-            }
-
-            Vertices.Add(vertex);
-
-            if (Vertices.Count <= 1)
-            {
-                return;
-            }
-
-            var lastVertex = Vertices[^2];
-            var newEdge = new Edge(lastVertex, vertex);
-
-            Edges.Add(newEdge);
+            return;
         }
 
-        public void RemoveVertex(Point vertex)
+        Vertices.Add(vertex);
+
+        if (Vertices.Count <= 1)
         {
-            if (!IsClosed)
+            return;
+        }
+
+        var lastVertex = Vertices[^2];
+        var newEdge = new Edge(lastVertex, vertex);
+
+        Edges.Add(newEdge);
+    }
+
+    public void RemoveVertex(Point vertex)
+    {
+        if (!IsClosed)
+        {
+            return;
+        }
+
+        if (Edges.Any(e => e is BezierEdge be && (be.ControlPoint1 == vertex || be.ControlPoint2 == vertex)))
+        {
+            return;
+        }
+
+        if (!Vertices.Remove(vertex))
+        {
+            return;
+        }
+
+        var edgesToRemove = Edges.Where(e => e.Start == vertex || e.End == vertex)
+            .ToList();
+
+        var neighboringPoints = edgesToRemove
+            .Select(e => e.Start == vertex ? e.End : e.Start)
+            .ToList();
+
+        foreach (var e in edgesToRemove)
+        {
+            RemoveEdge(e);
+        }
+
+        if (neighboringPoints.Count == 2)
+        {
+            var newEdge = new Edge(neighboringPoints[0], neighboringPoints[1]);
+            Edges.Add(newEdge);
+        }
+    }
+
+    public void SplitEdge(Edge edge)
+    {
+        if (!Edges.Contains(edge))
+        {
+            return;
+        }
+
+        var newVertex = new Point((edge.Start.X + edge.End.X) / 2, (edge.Start.Y + edge.End.Y) / 2);
+
+        RemoveEdge(edge);
+
+        var edge1 = new Edge(edge.Start, newVertex);
+        var edge2 = new Edge(newVertex, edge.End);
+
+        Edges.Add(edge1);
+        Edges.Add(edge2);
+        Vertices.Add(newVertex);
+    }
+
+    public void Clear()
+    {
+        Vertices.Clear();
+        Edges.Clear();
+        IsClosed = false;
+    }
+
+    public void ClosePolygon()
+    {
+        if (Vertices.Count <= 2 || IsClosed)
+        {
+            return;
+        }
+
+        var firstVertex = Vertices[0];
+        var lastVertex = Vertices[^1];
+        var newEdge = new Edge(lastVertex, firstVertex);
+
+        Edges.Add(newEdge);
+        IsClosed = true;
+    }
+
+    public void ReplaceEdge(Edge oldEdge, Edge newEdge)
+    {
+        if (!Edges.Contains(oldEdge))
+        {
+            return;
+        }
+
+        if (newEdge is BezierEdge bezierEdge)
+        {
+            bezierEdge.ControlPoint1 = new Point(
+                (oldEdge.Start.X + oldEdge.End.X) / 2,
+                oldEdge.Start.Y);
+            bezierEdge.ControlPoint2 = new Point(
+                (oldEdge.Start.X + oldEdge.End.X) / 2,
+                oldEdge.End.Y);
+
+            Vertices.AddRange([bezierEdge.ControlPoint1, bezierEdge.ControlPoint2]);
+        }
+
+        if (oldEdge is BezierEdge oldBezierEdge)
+        {
+            if (oldBezierEdge.ControlPoint1 != null)
             {
-                return;
+                _ = Vertices.Remove(oldBezierEdge.ControlPoint1);
             }
 
-            if (!Vertices.Remove(vertex))
+            if (oldBezierEdge.ControlPoint2 != null)
             {
-                return;
+                _ = Vertices.Remove(oldBezierEdge.ControlPoint2);
             }
+        }
 
-            var edgesToRemove = Edges.Where(e => e.Start == vertex || e.End == vertex);
+        RemoveEdge(oldEdge);
 
-            foreach (var edge in edgesToRemove)
+        Edges.Add(newEdge);
+
+        ConstraintResolver.ResolveConstraints(this);
+    }
+    public void Translate(float dx, float dy)
+    {
+        foreach (var v in Vertices)
+        {
+            v.Translate(dx, dy);
+        }
+    }
+
+    public void MovePoint(Point p, int newX, int newY)
+    {
+        if (!Vertices.Contains(p))
+        {
+            return;
+        }
+
+        var movedVertOldPos = (p.X, p.Y);
+
+        p.X = newX;
+        p.Y = newY;
+        ConstraintResolver.ResolveConstraints(this, p, movedVertOldPos);
+    }
+
+    public void ChangeLength(Edge e, int newLength)
+    {
+        if (!Edges.Contains(e) || e is not FixedLengthEdge fle)
+        {
+            return;
+        }
+
+        fle.FixedLength = newLength;
+
+        ConstraintResolver.ResolveConstraints(this);
+    }
+
+    public void SetVertexContinuity(Point p, ContinuuityType type)
+    {
+        if (!Vertices.Contains(p))
+        {
+            return;
+        }
+
+        p.Type = type;
+
+        if (type == ContinuuityType.G0)
+        {
+            var neighbors = GetEdgesByPoint(p);
+
+            foreach (var neighbor in neighbors)
             {
-                if (edge is not BezierEdge be)
+                if (neighbor is not CircleEdge ce
+                    || ce.Start.Type != ContinuuityType.G0
+                    || ce.End.Type != ContinuuityType.G0)
                 {
                     continue;
                 }
 
-                if (be.ControlPoint1 is not null)
-                {
-                    Vertices.Remove(be.ControlPoint1);
-                }
-
-                if (be.ControlPoint2 is not null)
-                {
-                    Vertices.Remove(be.ControlPoint2);
-                }
+                ce.ResetMiddle();
             }
+        }
 
-            var neighboringPoints = edgesToRemove
-                .Select(e => e.Start == vertex ? e.End : e.Start)
-                .ToList();
+        ConstraintResolver.ResolveConstraints(this);
+    }
 
-            Edges.RemoveAll(e => edgesToRemove.Contains(e));
+    public Point? GetVertexNear(int x, int y, float radius = 10.0f)
+    {
+        return Vertices.FirstOrDefault(v => v.DistanceTo(x, y) < radius);
+    }
 
-            if (neighboringPoints.Count == 2)
+    public Edge? GetEdgeByPoints(Point p1, Point p2)
+    {
+        return Edges.FirstOrDefault(e => e.Start == p1 && e.End == p2 || e.Start == p2 && e.End == p1);
+    }
+    public List<Edge> GetEdgesByPoint(Point p)
+    {
+        return [.. Edges.Where(e => e.Start == p || e.End == p)];
+    }
+
+    public List<Edge> GetEdgeNeighbors(Edge e)
+    {
+        var neighbors = new List<Edge>();
+        foreach (var edge in Edges)
+        {
+            if (edge == e
+                || edge.Start != e.Start
+                    && edge.Start != e.End
+                    && edge.End != e.Start
+                    && edge.End != e.End)
             {
-                var newEdge = new Edge(neighboringPoints[0], neighboringPoints[1]);
-                Edges.Add(newEdge);
+                continue;
             }
+
+            neighbors.Add(edge);
         }
 
-        public void SplitEdge(Edge edge)
+        return neighbors;
+    }
+
+    public (float x, float y) GetCenter()
+    {
+        if (Vertices.Count == 0)
         {
-            if (!Edges.Contains(edge))
+            return (0, 0);
+        }
+
+        var sumX = Vertices.Sum(v => v.X);
+        var sumY = Vertices.Sum(v => v.Y);
+        return (sumX / Vertices.Count, sumY / Vertices.Count);
+    }
+
+    private void RemoveEdge(Edge e)
+    {
+        if (e is BezierEdge be)
+        {
+            if (be.ControlPoint1 != null)
             {
-                return;
+                _ = Vertices.Remove(be.ControlPoint1);
             }
 
-            var newVertex = new Point((edge.Start.X + edge.End.X) / 2, (edge.Start.Y + edge.End.Y) / 2);
-
-            RemoveEdge(edge);
-
-            var edge1 = new Edge(edge.Start, newVertex);
-            var edge2 = new Edge(newVertex, edge.End);
-
-            Edges.Add(edge1);
-            Edges.Add(edge2);
-            Vertices.Add(newVertex);
-        }
-
-        public void Clear()
-        {
-            Vertices.Clear();
-            Edges.Clear();
-            IsClosed = false;
-        }
-
-        public void ClosePolygon()
-        {
-            if (Vertices.Count <= 2 || IsClosed)
+            if (be.ControlPoint2 != null)
             {
-                return;
-            }
-
-            var firstVertex = Vertices[0];
-            var lastVertex = Vertices[^1];
-            var newEdge = new Edge(lastVertex, firstVertex);
-
-            Edges.Add(newEdge);
-            IsClosed = true;
-        }
-
-        public void ReplaceEdge(Edge oldEdge, Edge newEdge)
-        {
-            if (!Edges.Contains(oldEdge))
-            {
-                return;
-            }
-
-            if (newEdge is BezierEdge bezierEdge)
-            {
-                bezierEdge.ControlPoint1 = new Point(
-                    (oldEdge.Start.X + oldEdge.End.X) / 2,
-                    oldEdge.Start.Y);
-                bezierEdge.ControlPoint2 = new Point(
-                    (oldEdge.Start.X + oldEdge.End.X) / 2,
-                    oldEdge.End.Y);
-
-                Vertices.AddRange([bezierEdge.ControlPoint1, bezierEdge.ControlPoint2]);
-            }
-
-            if (oldEdge is BezierEdge oldBezierEdge)
-            {
-                if (oldBezierEdge.ControlPoint1 != null)
-                {
-                    Vertices.Remove(oldBezierEdge.ControlPoint1);
-                }
-                if (oldBezierEdge.ControlPoint2 != null)
-                {
-                    Vertices.Remove(oldBezierEdge.ControlPoint2);
-                }
-            }
-
-            RemoveEdge(oldEdge);
-
-            Edges.Add(newEdge);
-
-            ConstraintResolver.ResolveConstraints(this);
-        }
-        public void Translate(float dx, float dy)
-        {
-            foreach (var v in Vertices)
-            {
-                v.Translate(dx, dy);
+                _ = Vertices.Remove(be.ControlPoint2);
             }
         }
 
-        public void MovePoint(Point p, int newX, int newY)
-        {
-            if (!Vertices.Contains(p))
-            {
-                return;
-            }
-
-            var movedVertOldPos = (p.X, p.Y);
-
-            p.X = newX;
-            p.Y = newY;
-            ConstraintResolver.ResolveConstraints(this, p, movedVertOldPos);
-        }
-
-        public void ChangeLength(Edge e, int newLength)
-        {
-            if (!Edges.Contains(e) || e is not FixedLengthEdge fle)
-            {
-                return;
-            }
-
-            fle.FixedLength = newLength;
-
-            ConstraintResolver.ResolveConstraints(this);
-        }
-
-        public void SetVertexContinuity(Point p, ContinuuityType type)
-        {
-            if (!Vertices.Contains(p))
-            {
-                return;
-            }
-
-            p.Type = type;
-
-
-            if (type == ContinuuityType.G0)
-            {
-                var neighbors = GetEdgesByPoint(p);
-
-                foreach (var neighbor in neighbors)
-                {
-                    if (neighbor is not CircleEdge ce
-                        || ce.Start.Type != ContinuuityType.G0
-                        || ce.End.Type != ContinuuityType.G0)
-                    {
-                        continue;
-                    }
-
-                    ce.ResetMiddle();
-                }
-            }
-
-            ConstraintResolver.ResolveConstraints(this);
-        }
-
-        public Point? GetVertexNear(int x, int y, float radius = 10.0f)
-        {
-            return Vertices.FirstOrDefault(v => v.DistanceTo(x, y) < radius);
-        }
-
-        public Edge? GetEdgeByPoints(Point p1, Point p2)
-        {
-            return Edges.FirstOrDefault(e => (e.Start == p1 && e.End == p2) || (e.Start == p2 && e.End == p1));
-        }
-        public List<Edge> GetEdgesByPoint(Point p)
-        {
-            return [.. Edges.Where(e => e.Start == p || e.End == p)];
-        }
-
-        public List<Edge> GetEdgeNeighbors(Edge e)
-        {
-            var neighbors = new List<Edge>();
-            foreach (var edge in Edges)
-            {
-                if (edge == e
-                    || (edge.Start != e.Start
-                        && edge.Start != e.End
-                        && edge.End != e.Start
-                        && edge.End != e.End))
-                {
-                    continue;
-                }
-                neighbors.Add(edge);
-            }
-            return neighbors;
-        }
-
-        public (float x, float y) GetCenter()
-        {
-            if (Vertices.Count == 0)
-            {
-                return (0, 0);
-            }
-            var sumX = Vertices.Sum(v => v.X);
-            var sumY = Vertices.Sum(v => v.Y);
-            return (sumX / Vertices.Count, sumY / Vertices.Count);
-        }
-
-        private void RemoveEdge(Edge e)
-        {
-            Edges.Remove(e);
-        }
-
+        _ = Edges.Remove(e);
     }
 }
