@@ -236,6 +236,8 @@ public partial class PolygonDrawer : Form
             ? fle.FixedLength.ToString()
             : string.Empty;
 
+        setLengthButton.Enabled = _selectedEdge is FixedLengthEdge;
+
         gdiRenderrRadioButton.Enabled = _selectedEdge is not null || _selectedVert is not null;
         gdiRenderrRadioButton.Checked = _selectedEdge is not null
             ? _selectedEdge.Renderer == _gdiRenderer
@@ -252,7 +254,7 @@ public partial class PolygonDrawer : Form
         deleteVertexButton.Enabled = _selectedVert is not null;
         g0RadioButton.Enabled = _selectedVert is not null;
         g0RadioButton.Checked = _selectedVert?.Type == ContinuuityType.G0;
-        g1RadioButton.Enabled = _selectedVert is not null 
+        g1RadioButton.Enabled = _selectedVert is not null
             && !_polygon.GetEdgesByPoint(_selectedVert)
                 .Any(e => e is CircleEdge ce
                     && ce.GetPoints()

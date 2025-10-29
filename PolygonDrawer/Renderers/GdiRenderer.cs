@@ -60,17 +60,27 @@ internal sealed class GdiRenderer() : IRenderer, IGdiRenderer
             middley - radius,
             radius * 2,
             radius * 2);
+        if (rect.Width <= 0 || rect.Height <= 0)
+        {
+            return;
+        }
 
         var startAngle = (float)(Math.Atan2(yfrom - middley, xfrom - middlex) * 180 / Math.PI);
         var endAngle = (float)(Math.Atan2(yto - middley, xto - middlex) * 180 / Math.PI);
         var sweepAngle = endAngle - startAngle;
-
         if (sweepAngle <= 0)
         {
             sweepAngle += 360;
         }
 
-        _graphics?.DrawArc(Pens.Black, rect, startAngle, sweepAngle);
+        try
+        {
+            _graphics?.DrawArc(Pens.Black, rect, startAngle, sweepAngle);
+        }
+        catch (Exception)
+        {
+
+        }
     }
 
     public void DrawDashedLine(float x1, float y1, float x2, float y2)
@@ -79,7 +89,6 @@ internal sealed class GdiRenderer() : IRenderer, IGdiRenderer
         {
             DashStyle = DashStyle.Dash
         };
-
         _graphics?.DrawLine(pen, x1, y1, x2, y2);
     }
 }

@@ -10,6 +10,7 @@ public sealed class FixedLengthEdge : Edge
 
     public FixedLengthEdge(Edge e) : this(e.Start, e.End)
     {
+
     }
 
     [JsonConstructor]
