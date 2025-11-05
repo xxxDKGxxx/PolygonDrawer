@@ -39,6 +39,7 @@
             label2 = new Label();
             label1 = new Label();
             groupBox3 = new GroupBox();
+            c2RadioButton = new RadioButton();
             c1RadioButton = new RadioButton();
             g1RadioButton = new RadioButton();
             g0RadioButton = new RadioButton();
@@ -181,6 +182,7 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(c2RadioButton);
             groupBox3.Controls.Add(c1RadioButton);
             groupBox3.Controls.Add(g1RadioButton);
             groupBox3.Controls.Add(g0RadioButton);
@@ -192,6 +194,17 @@
             groupBox3.TabIndex = 2;
             groupBox3.TabStop = false;
             groupBox3.Text = "Vertex Controls";
+            // 
+            // c2RadioButton
+            // 
+            c2RadioButton.AutoSize = true;
+            c2RadioButton.Location = new Point(139, 55);
+            c2RadioButton.Name = "c2RadioButton";
+            c2RadioButton.Size = new Size(39, 19);
+            c2RadioButton.TabIndex = 4;
+            c2RadioButton.TabStop = true;
+            c2RadioButton.Text = "C2";
+            c2RadioButton.UseVisualStyleBackColor = true;
             // 
             // c1RadioButton
             // 
@@ -484,5 +497,6 @@
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem serializeToolStripMenuItem;
         private ToolStripMenuItem deserializeToolStripMenuItem;
+        private RadioButton c2RadioButton;
     }
 }

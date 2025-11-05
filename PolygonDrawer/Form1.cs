@@ -93,6 +93,8 @@ public partial class PolygonDrawer : Form
 
         c1RadioButton.CheckedChanged += (s, e) => SetContinuuity(c1RadioButton, ContinuuityType.C1);
 
+        c2RadioButton.CheckedChanged += (s, e) => SetContinuuity(c2RadioButton, ContinuuityType.C2);
+
         gdiRenderrRadioButton.CheckedChanged += (s, e) => SetRenderer(gdiRenderrRadioButton, _gdiRenderer);
 
         customRenderingRadioButton.CheckedChanged += (s, e) => SetRenderer(customRenderingRadioButton, _customRenderer);
@@ -258,6 +260,8 @@ public partial class PolygonDrawer : Form
         c1RadioButton.Enabled = _selectedVert is not null && !_polygon.GetEdgesByPoint(_selectedVert)
             .Any(e => e is CircleEdge);
         c1RadioButton.Checked = _selectedVert?.Type == ContinuuityType.C1;
+        c2RadioButton.Enabled = _selectedVert is not null;
+        c2RadioButton.Checked = _selectedVert?.Type == ContinuuityType.C2;
 
         _isPointDragged = true;
 

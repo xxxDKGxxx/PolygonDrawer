@@ -63,6 +63,11 @@ public class Edge : IRenderable
         };
     }
 
+    public virtual Vector2 GetSecondTangentAtEnd(Point p)
+    {
+        return Vector2.Zero;
+    }
+
     public virtual bool AlignG1(Vector2 tangent, Point p, HashSet<Point> fixedPoints)
     {
         var otherp = Start == p ? End : Start;
@@ -99,6 +104,11 @@ public class Edge : IRenderable
         otherp.Y = newY;
 
         return true;
+    }
+
+    public virtual bool AlignC2(Vector2 firstTangent, Vector2 secondTangent, Point p, HashSet<Point> fixedPoints)
+    {
+        return false;
     }
 
     public virtual List<Point> GetPoints()

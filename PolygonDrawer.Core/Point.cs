@@ -69,6 +69,22 @@ public sealed class Point(float x, float y, ContinuuityType pointType = Continuu
             violated = violated || MathF.Abs(length1 / length2 - 1) > 0.01f;
         }
 
+        if (Type == ContinuuityType.C2)
+        {
+            var secondTangent1 = neighbor1.GetSecondTangentAtEnd(this);
+            var secondTangent2 = neighbor2.GetSecondTangentAtEnd(this);
+
+            var a12 = secondTangent1.X;
+            var a22 = secondTangent1.Y;
+            var b12 = secondTangent2.X;
+            var b22 = secondTangent2.Y;
+
+            violated = violated
+                || MathF.Abs(a12 * b22 - a22 * b12) > 0.01f
+                || Vector2.Dot(secondTangent1, secondTangent2) > -0.99f // direction
+                || MathF.Abs(secondTangent1.LengthSquared() - secondTangent2.LengthSquared()) > 0.01f; // length
+        }
+
         return violated;
     }
 
@@ -105,6 +121,18 @@ public sealed class Point(float x, float y, ContinuuityType pointType = Continuu
             }
 
             return;
+        }
+
+        if (Type == ContinuuityType.C2)
+        {
+            var secondTangent1 = neighbor1.GetSecondTangentAtEnd(this);
+            var secondTangent2 = neighbor2.GetSecondTangentAtEnd(this);
+
+            if (!neighbor1.AlignC2(tangent2, secondTangent2, this, fixedPoints) 
+                && !neighbor2.AlignC2(tangent1, secondTangent1, this, fixedPoints))
+            {
+                Type = ContinuuityType.G0;
+            }
         }
     }
 

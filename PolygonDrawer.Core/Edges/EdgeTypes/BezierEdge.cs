@@ -32,6 +32,23 @@ public class BezierEdge : Edge
         };
     }
 
+    public override Vector2 GetSecondTangentAtEnd(Point p)
+    {
+        if (ControlPoint1 is null || ControlPoint2 is null)
+        {
+            throw new InvalidOperationException("No control points provided");
+        }
+
+        return p switch
+        {
+            var u when u == Start => 6 * new Vector2(Start.X - 2 * ControlPoint1.X + ControlPoint2.X,
+                                                     Start.Y - 2 * ControlPoint1.Y + ControlPoint2.Y),
+            var v when v == End => 6 * new Vector2(End.X - 2 * ControlPoint2.X + ControlPoint1.X,
+                                                   End.Y - 2 * ControlPoint2.Y + ControlPoint1.Y),
+            _ => throw new InvalidOperationException("Point is not a part of the bezier edge")
+        };
+    }
+
     public override void Render()
     {
         if (ControlPoint1 == null || ControlPoint2 == null)
@@ -142,6 +159,44 @@ public class BezierEdge : Edge
             ControlPoint2.X = End.X - tangent.X;
             ControlPoint2.Y = End.Y - tangent.Y;
 
+            return true;
+        }
+
+        return false;
+    }
+
+    public override bool AlignC2(Vector2 firstTangent, Vector2 secondTangent, Point p, HashSet<Point> fixedPoints)
+    {
+        if (ControlPoint1 is null || ControlPoint2 is null)
+        {
+            throw new InvalidOperationException("No control points provided");
+        }
+
+        _ = AlignC1(new Vector2(firstTangent.X, firstTangent.Y), p, fixedPoints);
+
+        firstTangent *= -1;
+
+        if (p == Start)
+        {
+            if (fixedPoints.Contains(ControlPoint2))
+            {
+                return false;
+            }
+
+            ControlPoint2.X = Start.X + 2 * firstTangent.X / 3f; 
+            ControlPoint2.Y = Start.Y + 2 * firstTangent.Y / 3f;
+            return true;
+        }
+
+        if (p == End)
+        {
+            if (fixedPoints.Contains(ControlPoint1))
+            {
+                return false;
+            }
+
+            ControlPoint1.X = End.X + 2 * firstTangent.X / 3;
+            ControlPoint1.Y = End.Y + 2 * firstTangent.Y / 3;
             return true;
         }
 

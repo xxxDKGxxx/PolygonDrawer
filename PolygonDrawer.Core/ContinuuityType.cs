@@ -5,4 +5,5 @@ public enum ContinuuityType
     G0,
     G1,
     C1,
+    C2,
 }

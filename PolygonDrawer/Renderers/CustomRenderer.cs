@@ -23,7 +23,7 @@ internal sealed class CustomRenderer : IRenderer, IGdiRenderer
         var v3 = new Vector2(x2, y2);
 
         var a0 = v0;
-        var a1 = 3 * (v1 - v0);
+        var a1 = 3 * (v1 - v0); 
         var a2 = 3 * (v2 - 2 * v1 + v0);
         var a3 = v3 - 3 * v2 + 3 * v1 - v0;
 
